@@ -42,6 +42,11 @@ OP_RETURN
 *  type: 'c' or 'b'
 *  sequence: only needed if multiple tx(update) in same block. sequence is a number, higher number tx overwrites the lower one. everything what is not number is translated to 1.
 
+
+#### Overwrite D:// State
+New transactions with the same alias from a sender automatically override the old state. Protocol API always outputs only the most current state.
+The alias sender combination prevents an unauthorized one from changing state.
+
 #### Example Tx
 This is an example Webseite with D:// link in it: https://bico.media/0363e9addc3f5de6587b250a07c4bab00f58f54cf780aa5f0f4655a8d3e4cfa5
 
@@ -51,10 +56,6 @@ this should map <img src="D://19iG3WTYSsbyos3uJ733yK4zEioi1FesNU/der_wolf_und_di
 State machine D:// tx:  https://whatsonchain.com/tx/329eacb2d1ab8770ac01d2daa13a852d72282379ea26caca1729817315fb12b0
 
 State machine Query: https://d.onchain.ch/query/1G3BpTyEK6xF4LaQTHqdFBBaVxYHZzts4M/ewogICJ2IjogMywKICAicSI6IHsKICAgICJmaW5kIjogewogICAgICAic2VuZGVyIjoiMTlpRzNXVFlTc2J5b3MzdUo3MzN5SzR6RWlvaTFGZXNOVSIsCiAgICAgICJhbGlhcyI6ImRlcl93b2xmX3VuZF9kaWVfc2llYmVuX2dlaXNsZWluLmpwZWciCiAgICB9LAogICAgImxpbWl0IjogMTAwCiAgfSwKICAiciI6IHsKICAgICJmIjogIlsuW10gfCB7IHRyYW5zYWN0aW9uOiAudHhpZCwgYmxvY2s6IC5ibGsuaSwgc2VuZGVyOiAuc2VuZGVyICwgYWxpYXM6IC5hbGlhcywgcG9pbnRlcjogLnBvaW50ZXIsY250OiAuY250LCB0eXBlOiAudHlwZSAsIHNlcTogLnNlcSAsIFwiVVJJIG92ZXIgaHR0cHNcIjogKGlmIC50eXBlID09IFwiY1wiIHRoZW4gXCJodHRwczovL2RhdGEuYml0ZGIubmV0d29yay8xS3VVcjJwU0pEYW85N1hNOEpzcTh6d0xTNlcxV3RGZkxnL2MvXFwoLnBvaW50ZXIpXCIgZWxzZSBcImh0dHBzOi8vYi5iaXRkYi5uZXR3b3JrI1xcKC5wb2ludGVyKVwiIGVuZCl9XSIKICB9Cn0=
-
-#### Overwrite D:// State
-New transactions with the same alias from a sender automatically override the old state. Protocol API always outputs only the most current state.
-The alias sender combination prevents an unauthorized one from changing state.
 
 #### ...
 *  An API that resolves D: // links to txids or an API that returns even the file data can be built.
