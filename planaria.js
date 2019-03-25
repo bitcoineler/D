@@ -1,8 +1,3 @@
-/***************************************
-*
-* API Reference: https://docs.planaria.network/#/api?id=anatomy-of-a-planaria
-*
-***************************************/
 const bitcomD = "19iG3WTYSsbyos3uJ733yK4zEioi1FesNU"
 
 var updateState = async function(m,o) {
