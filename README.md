@@ -23,9 +23,6 @@ Example D:// (Pointer **can be changed**, because the state of the entry can be 
 
 The D: // protocol should point to the TxID e.g. of a B: // file and thus forms another layer which state can be overwritten.
 
-=> Im not sure if it makes sense to add a type field !?
-=> possible types could be: txid-pointer, folder-pointer, ?
-
 Here's an example of what **D transactions** look like:
 
 ```
