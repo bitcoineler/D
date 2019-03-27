@@ -44,6 +44,8 @@ OP_RETURN
 New transactions with the same alias from a sender automatically override the old state. Protocol API always outputs only the most current state.
 The alias sender combination prevents an unauthorized one from changing state.
 
+*Note: The code is written so that only the sender address of the first input is considered!*
+
 #### Example Tx
 This is an example Webseite with D:// link in it: https://bico.media/0363e9addc3f5de6587b250a07c4bab00f58f54cf780aa5f0f4655a8d3e4cfa5
 
