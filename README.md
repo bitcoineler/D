@@ -1,21 +1,17 @@
 # D://
 _Bitcoin dynamic name protocol_
 
-
-
-
 ## Benefit
 A D:// transaction refers to another transaction/file and thus forms a layer which state can be overwritten. This way, referencing content via D:// links (instead of b:// or c://) has the advantage of keeping the URL while the content can change.
 
-Example B:// (**can not be changed** once set):<br>
-``<img src="B://<TxID(1)>"``
+Example B:// (**can not** be changed once set):<br>``<img src="B://<TxID>"``
 
-Example D:// (Pointer **can be changed**, because the state of the entry can be overwritten.):<br>  
-``<img src="D://<OwnerBitcoinAddress>/<key>"``
+Example D:// (Pointer **can** be changed, because the state can be updated):<br>``<img src="D://<OwnerBitcoinAddress>/<key>"``
 
+Please note the key should always be presented as URL encoded to the user.
 
 #### Overwrite D:// State
-New transactions with the same `key` from a sender automatically override the old state. Protocol API always outputs only the most current state
+New transactions with the same `key` from a sender overwrite the previous state. The Planaria API always outputs only the most current state.
 The owner/key combination prevents an unauthorised person from changing the state.
 
 
@@ -39,15 +35,13 @@ OP_RETURN
   [sequence]
 ```
 
-*  `key`: a utf8 encoded string no longer than 1024 chars __not__ starting with `/` and not including the control chars `[\x00-\x1F\x7F]`. It is suggested to simulate a folder like structure. Even if all utf8 chars are allowed it is advised to consider, that normal day usage will involve a URL escaped version presented to the user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
+*  `key`: a utf8 encoded string no longer than 1024 chars __not__ starting with `/` and not including the chars `[\x00-\x1F\x7F?#]`. It is suggested to simulate a folder like structure in a URI styled manner. Even if (almost) all utf8 chars are allowed it is not to be considered an [IRI](https://en.wikipedia.org/wiki/Internationalized_Resource_Identifier) and `key` must be url-escaped to become a valid [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) whenever presented to a user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
 
 *  `pointer`: string with txid of b:// or hash of a c://
 
 *  `type`: The string `c` or `b` indicating the type of pointer
 
-*  `sequence`: Integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Only used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
-
-
+*  `sequence`: Integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
 
 
 
@@ -115,8 +109,29 @@ OP_RETURN
   [Signature]
 ```
 
-If a transaction includes a valid AIP signature and the signature involves all previous fields (AIP_ALL) it is not the sender but the signing address that will be considered the owner in the transaction. 
+If a transaction includes a valid AIP signature and the signature involves all previous fields (AIP_ALL) both the sender and AIP signing address will create an update to the key. Effectively this means that you will be able to access the content with both `D://<tx sender address>/<key>` and `D://<AIP signing address>/<key>`.
 
+
+### Delete
+
+A key is "removed" by referencing a transaction with `NULL` as file content (`0x00`). The state of the planaria will provide the string `deleted` as "type" when a key is removed. 
+
+Example: 
+
+```
+OP_RETURN
+  19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut
+  null
+  binary
+  NULL
+  NULL
+  |
+  19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
+  [key]
+  NULL
+  NULL
+  1
+```
 
 #### Example Tx
 This is an example Website with D:// link in it: https://bico.media/0363e9addc3f5de6587b250a07c4bab00f58f54cf780aa5f0f4655a8d3e4cfa5
@@ -139,6 +154,6 @@ https://d.onchain.ch/query/1G3BpTyEK6xF4LaQTHqdFBBaVxYHZzts4M
 
 #### ...
 * An API that resolves D:// links to txids or an API that returns even the file data can be built.
-* State reset/delete actions
-* Delete file (set content to null?)
 * Get a list of "files" in a directory (find all current tx with a key that starts with `xyz/` for a specific owner)
+* Multiple signatures to share control. 
+* X out of N signatures to share control.
