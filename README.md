@@ -152,8 +152,8 @@ A D:// transaction is referenced by `D://<OwnerBitcoinAddress>/<key>`
 
 - In case no key is provided the `/` is optional
 
-- In case no key is provided the content will be derived from the first of the following keys with a non deleted d:// transaction:
-  1. The key `NULL` 
+- In case no key is provided, the content will tentatively be derived from the first of the following keys with a none deleted d:// transaction:
+  1. The key of `NULL` value (`0x00`)
   2. The key `index.html` 
   2. The key `index.htm` 
 
