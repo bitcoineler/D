@@ -8,8 +8,6 @@ Example B:// (**can not** be changed once set):<br>``<img src="B://<TxID>"``
 
 Example D:// (Pointer **can** be changed, because the state can be updated):<br>``<img src="D://<OwnerBitcoinAddress>/<key>"``
 
-Please note the key should always be presented as URL encoded to the user.
-
 #### Overwrite D:// State
 New transactions with the same `key` from a sender overwrite the previous state. The Planaria API always outputs only the most current state.
 The owner/key combination prevents an unauthorised person from changing the state.
@@ -35,7 +33,7 @@ OP_RETURN
   [sequence]
 ```
 
-*  `key`: a utf8 encoded string no longer than 1024 chars __not__ starting with `/` and not including the chars `[\x00-\x1F\x7F?#]`. It is suggested to simulate a folder like structure in a URI styled manner. Even if (almost) all utf8 chars are allowed it is not to be considered an [IRI](https://en.wikipedia.org/wiki/Internationalized_Resource_Identifier) and `key` must be url-escaped to become a valid [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) whenever presented to a user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
+*  `key`: NULL or a utf8 encoded string no longer than 1024 chars __not__ starting with `/` and not including the chars `[\x00-\x1F\x7F?#]`. It is suggested to simulate a folder like structure in a URI styled manner. Even if (almost) all utf8 chars are allowed it is not to be considered an [IRI](https://en.wikipedia.org/wiki/Internationalized_Resource_Identifier) and `key` must be url-escaped to become a valid [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) whenever presented to a user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
 
 *  `pointer`: string with txid of b:// or hash of a c://
 
@@ -121,7 +119,7 @@ Example:
 ```
 OP_RETURN
   19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut
-  null
+  NULL
   binary
   NULL
   NULL
@@ -142,6 +140,25 @@ This should map <img src="D://19iG3WTYSsbyos3uJ733yK4zEioi1FesNU/der_wolf_und_di
 State machine D:// tx:  https://whatsonchain.com/tx/329eacb2d1ab8770ac01d2daa13a852d72282379ea26caca1729817315fb12b0
 
 State machine Query: https://d.onchain.ch/query/1G3BpTyEK6xF4LaQTHqdFBBaVxYHZzts4M/ewogICJ2IjogMywKICAicSI6IHsKICAgICJmaW5kIjogewogICAgICAic2VuZGVyIjoiMTlpRzNXVFlTc2J5b3MzdUo3MzN5SzR6RWlvaTFGZXNOVSIsCiAgICAgICJhbGlhcyI6ImRlcl93b2xmX3VuZF9kaWVfc2llYmVuX2dlaXNsZWluLmpwZWciCiAgICB9LAogICAgImxpbWl0IjogMTAwCiAgfSwKICAiciI6IHsKICAgICJmIjogIlsuW10gfCB7IHRyYW5zYWN0aW9uOiAudHhpZCwgYmxvY2s6IC5ibGsuaSwgc2VuZGVyOiAuc2VuZGVyICwgYWxpYXM6IC5hbGlhcywgcG9pbnRlcjogLnBvaW50ZXIsY250OiAuY250LCB0eXBlOiAudHlwZSAsIHNlcTogLnNlcSAsIFwiVVJJIG92ZXIgaHR0cHNcIjogKGlmIC50eXBlID09IFwiY1wiIHRoZW4gXCJodHRwczovL2RhdGEuYml0ZGIubmV0d29yay8xS3VVcjJwU0pEYW85N1hNOEpzcTh6d0xTNlcxV3RGZkxnL2MvXFwoLnBvaW50ZXIpXCIgZWxzZSBcImh0dHBzOi8vYi5iaXRkYi5uZXR3b3JrI1xcKC5wb2ludGVyKVwiIGVuZCl9XSIKICB9Cn0=
+
+
+## Referencing
+
+A D:// transaction is referenced by `D://<OwnerBitcoinAddress>/<key>`
+
+- Key must always be presented as a URL encoded string
+
+- In case the key is NULL no key is to be provided
+
+- In case no key is provided the `/` is optional
+
+- In case no key is provided the content will be derived from the first of the following keys with a non deleted d:// transaction:
+  1. The key `NULL` 
+  2. The key `index.html` 
+  2. The key `index.htm` 
+
+
+
 
 
 ## Links
