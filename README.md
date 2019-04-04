@@ -4,9 +4,9 @@ _Bitcoin dynamic name protocol_
 ## Benefit
 A D:// transaction refers to another transaction/file and thus forms a layer which state can be overwritten. This way, referencing content via D:// links (instead of b:// or c://) has the advantage of keeping the URL while the content can change.
 
-Example B:// (**can not** be changed once set):<br>``<img src="B://<TxID>"``
+Example B:// (**can not** be changed once set):<br> ``<img src="B://<TxID>"``
 
-Example D:// (Pointer **can** be changed, because the state can be updated):<br>``<img src="D://<OwnerBitcoinAddress>/<key>"``
+Example D:// (Pointer **can** be changed, because the state can be updated):<br> ``<img src="D://<OwnerBitcoinAddress>/<key>"``
 
 #### Overwrite D:// State
 New transactions with the same `key` from a sender overwrite the previous state. The Planaria API always outputs only the most current state.
@@ -17,7 +17,7 @@ The owner/key combination prevents an unauthorised person from changing the stat
 
 - The prefix for D is [19iG3WTYSsbyos3uJ733yK4zEioi1FesNU](https://genesis.bitdb.network/query/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/ewogICJ2IjogMywKICAicSI6IHsKICAgICJmaW5kIjogewogICAgICAiaW4uZS5hIjogIjE5aUczV1RZU3NieW9zM3VKNzMzeUs0ekVpb2kxRmVzTlUiLAogICAgICAib3V0LnMxIjogIiQiCiAgICB9LAogICAgInNvcnQiOiB7CiAgICAgICJ0aW1lc3RhbXAiOiAxCiAgICB9LAogICAgImxpbWl0IjogMTAKICB9Cn0=), generated using [Bitcom](https://bitcom.bitdb.network)
 
-The owner of the transaction is the "sender" of the transaction = first input address.
+The sender of the transaction will alway be an "owner" of the state = first input address will be able to change the state again.
 
 D:// transactions comes in 2 variants. 
 
@@ -35,16 +35,16 @@ OP_RETURN
 
 *  `key`: NULL or a utf8 encoded string no longer than 1024 chars __not__ starting with `/` and not including the chars `[\x00-\x1F\x7F?#]`. It is suggested to simulate a folder like structure in a URI styled manner. Even if (almost) all utf8 chars are allowed it is not to be considered an [IRI](https://en.wikipedia.org/wiki/Internationalized_Resource_Identifier) and `key` must be url-escaped to become a valid [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) whenever presented to a user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
 
-*  `pointer`: string with txid of b:// or hash of a c://
+*  `pointer`: NULL, a string with the hex value of the txid of a b://, a string with the hex value of the hash of a c:// or a utf8 encoded string no onger than 2086 chars.
 
-*  `type`: The string `c` or `b` indicating the type of pointer
+*  `type`: NULL, the string `c` or `b` indicating the type of pointer or the text "txt" to indicate that the pointer value contains the full content.
 
 *  `sequence`: Integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
 
 
 
 ### Internal reference
-A D:// transaction with internal reference is piped directly on to a B:// formatted structure with mandatory fields for encoding and filename:
+A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename):
 
 ```
 OP_RETURN
@@ -68,8 +68,9 @@ OP_RETURN
 
 ### Explicit owner
 
-Both transactions with internal and external references can have the owner explicitly provided by piping the AIP protocol after the demonstrated fields (see https://github.com/BitcoinFiles/AUTHOR_IDENTITY_PROTOCOL). 
+Both transactions with internal and external references can add an explicit owner by piping the [AIP protocol](https://github.com/BitcoinFiles/AUTHOR_IDENTITY_PROTOCOL) that signs all previus fields (API_ALL). 
 
+Example A:
 
 ```
 OP_RETURN
@@ -85,7 +86,7 @@ OP_RETURN
   [Signature]
 ```
 
-
+Example B:
 
 ```
 OP_RETURN
@@ -112,18 +113,12 @@ If a transaction includes a valid AIP signature and the signature involves all p
 
 ### Delete
 
-A key is "removed" by referencing a transaction with `NULL` as file content (`0x00`). The state of the planaria will provide the string `deleted` as "type" when a key is removed. 
+A key is "removed" by updating the key with a reference set to NULL (`0x00`). The state of the planaria will provide the string `deleted` as "type" when a key is removed. 
 
 Example: 
 
 ```
 OP_RETURN
-  19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut
-  NULL
-  binary
-  NULL
-  NULL
-  |
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
   NULL
