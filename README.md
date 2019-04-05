@@ -37,14 +37,12 @@ OP_RETURN
 
 *  `value`: NULL, a string with the hex value of the txid of a b://, a string with the hex value of the hash of a c:// or a utf8 encoded string no onger than 2086 chars.
 
-*  `type`: NULL, the string `c` or `b` indicating the nature of a the content in the value field or the text "txt" to indicate that the value field contains the actual content.
+*  `type`: NULL, the string `c` or `b` indicating the nature of a the content in the value field or the text "txt" to indicate that the value field contains the actual content. For Internal references it must be the string 'tx' indicating that the latest update to state must reference the current transaction (see next section)
 
 *  `sequence`: Integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
 
-Please note that value and type must be both NULL or both a string for it to be a valid change of state. 
-
 ### Internal reference
-A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename):
+A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename). `type` must always be `tx` and `value` field will always be ignored. 
 
 ```
 OP_RETURN
@@ -57,7 +55,7 @@ OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
   NULL
-  NULL
+  tx
   [sequence]
 ```
 
@@ -99,7 +97,7 @@ OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
   NULL
-  NULL
+  tx
   [sequence]
   |
   15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva
@@ -108,12 +106,12 @@ OP_RETURN
   [Signature]
 ```
 
-If a transaction includes a valid AIP signature and the signature involves all previous fields (AIP_ALL) both the sender and AIP signing address will create an update to the key. Effectively this means that you will be able to access the content with both `D://<tx sender address>/<key>` and `D://<AIP signing address>/<key>`.
+If a transaction includes a valid AIP signature and the signature involves all previous fields (AIP_ALL) both the sender and AIP signing address will create an update state for `key`. Effectively this means that you will be able to access the content with both `D://<tx sender address>/<key>` and `D://<AIP signing address>/<key>`.
 
 
 ### Delete
 
-A key is "removed" by updating the key with a reference set to NULL (`0x00`). The state of the planaria will provide the string `deleted` as "type" when a key is removed. 
+A key is "removed" by updating the key with a `type` value set to NULL (`0x00`). The state of the planaria will provide the string `deleted` as "type" when a key is removed. 
 
 Example: 
 
