@@ -1,12 +1,12 @@
 # D://
-_Bitcoin dynamic name protocol_
+_Bitcoin dynamic content protocol_
 
 ## Benefit
 A D:// transaction refers to another transaction/file and thus forms a layer which state can be overwritten. This way, referencing content via D:// links (instead of b:// or c://) has the advantage of keeping the URL while the content can change.
 
 Example B:// (**can not** be changed once set):<br> ``<img src="B://<TxID>"``
 
-Example D:// (Pointer **can** be changed, because the state can be updated):<br> ``<img src="D://<OwnerBitcoinAddress>/<key>"``
+Example D:// (content **can** be changed, because the state can be updated):<br> ``<img src="D://<OwnerBitcoinAddress>/<key>"``
 
 #### Overwrite D:// State
 New transactions with the same `key` from a sender overwrite the previous state. The Planaria API always outputs only the most current state.
@@ -28,23 +28,21 @@ A D:// transaction with external reference is formatted like:
 OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
-  [pointer]
+  [value]
   [type]
   [sequence]
 ```
 
 *  `key`: NULL or a utf8 encoded string no longer than 1024 chars __not__ starting with `/` and not including the chars `[\x00-\x1F\x7F?#]`. It is suggested to simulate a folder like structure in a URI styled manner. Even if (almost) all utf8 chars are allowed it is not to be considered an [IRI](https://en.wikipedia.org/wiki/Internationalized_Resource_Identifier) and `key` must be url-escaped to become a valid [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) whenever presented to a user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
 
-*  `pointer`: NULL, a string with the hex value of the txid of a b://, a string with the hex value of the hash of a c:// or a utf8 encoded string no onger than 2086 chars.
+*  `value`: NULL, a string with the hex value of the txid of a b://, a string with the hex value of the hash of a c:// or a utf8 encoded string no onger than 2086 chars.
 
-*  `type`: NULL, the string `c` or `b` indicating the type of pointer or the text "txt" to indicate that the pointer value contains the full content.
+*  `type`: NULL, the string `c` or `b` indicating the nature of a the content in the value field or the text "txt" to indicate that the value field contains the actual content. For Internal references it must be the string 'tx' indicating that the latest update to state must reference the current transaction (see next section)
 
 *  `sequence`: Integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
 
-
-
 ### Internal reference
-A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename):
+A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename). `type` must always be `c` or `b` and `value` field will always be ignored. 
 
 ```
 OP_RETURN
@@ -57,7 +55,7 @@ OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
   NULL
-  NULL
+  <c|b>
   [sequence]
 ```
 
@@ -76,7 +74,7 @@ Example A:
 OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
-  [pointer]
+  [value]
   [type]
   [sequence]
   |
@@ -99,7 +97,7 @@ OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
   NULL
-  NULL
+  c
   [sequence]
   |
   15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva
@@ -108,12 +106,12 @@ OP_RETURN
   [Signature]
 ```
 
-If a transaction includes a valid AIP signature and the signature involves all previous fields (AIP_ALL) both the sender and AIP signing address will create an update to the key. Effectively this means that you will be able to access the content with both `D://<tx sender address>/<key>` and `D://<AIP signing address>/<key>`.
+If a transaction includes a valid AIP signature and the signature involves all previous fields (AIP_ALL) both the sender and AIP signing address will create an update state for `key`. Effectively this means that you will be able to access the content with both `D://<tx sender address>/<key>` and `D://<AIP signing address>/<key>`.
 
 
 ### Delete
 
-A key is "removed" by updating the key with a reference set to NULL (`0x00`). The state of the planaria will provide the string `deleted` as "type" when a key is removed. 
+A key is "removed" by updating the key with a `type` value set to NULL (`0x00`). The state of the planaria will provide the string `deleted` as "type" when a key is removed. 
 
 Example: 
 
