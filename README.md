@@ -1,5 +1,5 @@
 # D://
-_Bitcoin dynamic name protocol_
+_Bitcoin dynamic content protocol_
 
 ## Benefit
 A D:// transaction refers to another transaction/file and thus forms a layer which state can be overwritten. This way, referencing content via D:// links (instead of b:// or c://) has the advantage of keeping the URL while the content can change.
