@@ -42,7 +42,7 @@ OP_RETURN
 *  `sequence`: Integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
 
 ### Internal reference
-A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename). `type` must always be `tx` and `value` field will always be ignored. 
+A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename). `type` must always be `c` or `b` and `value` field will always be ignored. 
 
 ```
 OP_RETURN
@@ -55,7 +55,7 @@ OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
   NULL
-  tx
+  <c|b>
   [sequence]
 ```
 
@@ -97,7 +97,7 @@ OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
   NULL
-  tx
+  c
   [sequence]
   |
   15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva
