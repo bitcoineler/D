@@ -6,7 +6,7 @@ A D:// transaction refers to another transaction/file and thus forms a layer whi
 
 Example B:// (**can not** be changed once set):<br> ``<img src="B://<TxID>"``
 
-Example D:// (Pointer **can** be changed, because the state can be updated):<br> ``<img src="D://<OwnerBitcoinAddress>/<key>"``
+Example D:// (content **can** be changed, because the state can be updated):<br> ``<img src="D://<OwnerBitcoinAddress>/<key>"``
 
 #### Overwrite D:// State
 New transactions with the same `key` from a sender overwrite the previous state. The Planaria API always outputs only the most current state.
@@ -28,20 +28,20 @@ A D:// transaction with external reference is formatted like:
 OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
-  [pointer]
+  [value]
   [type]
   [sequence]
 ```
 
 *  `key`: NULL or a utf8 encoded string no longer than 1024 chars __not__ starting with `/` and not including the chars `[\x00-\x1F\x7F?#]`. It is suggested to simulate a folder like structure in a URI styled manner. Even if (almost) all utf8 chars are allowed it is not to be considered an [IRI](https://en.wikipedia.org/wiki/Internationalized_Resource_Identifier) and `key` must be url-escaped to become a valid [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) whenever presented to a user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
 
-*  `pointer`: NULL, a string with the hex value of the txid of a b://, a string with the hex value of the hash of a c:// or a utf8 encoded string no onger than 2086 chars.
+*  `value`: NULL, a string with the hex value of the txid of a b://, a string with the hex value of the hash of a c:// or a utf8 encoded string no onger than 2086 chars.
 
-*  `type`: NULL, the string `c` or `b` indicating the type of pointer or the text "txt" to indicate that the pointer value contains the full content.
+*  `type`: NULL, the string `c` or `b` indicating the nature of a the content in the value field or the text "txt" to indicate that the value field contains the actual content.
 
 *  `sequence`: Integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
 
-
+Please note that value and type must be both NULL or both a string for it to be a valid change of state. 
 
 ### Internal reference
 A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename):
@@ -76,7 +76,7 @@ Example A:
 OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
   [key]
-  [pointer]
+  [value]
   [type]
   [sequence]
   |
