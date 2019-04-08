@@ -26,7 +26,7 @@ A D:// transaction with external reference is formatted like:
 
 ```
 OP_RETURN
-  19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
+  19iG3WTYSsbyos3uJ733yK4zEioi1FesNU
   [key]
   [value]
   [type]
@@ -52,7 +52,7 @@ OP_RETURN
   [ENCODING] or NULL
   [FILENAME] or NULL
   |
-  19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
+  19iG3WTYSsbyos3uJ733yK4zEioi1FesNU
   [key]
   NULL
   <c|b>
@@ -72,7 +72,7 @@ Example A:
 
 ```
 OP_RETURN
-  19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
+  19iG3WTYSsbyos3uJ733yK4zEioi1FesNU
   [key]
   [value]
   [type]
@@ -94,7 +94,7 @@ OP_RETURN
   [ENCODING] or NULL
   [FILENAME] or NULL
   |
-  19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
+  19iG3WTYSsbyos3uJ733yK4zEioi1FesNU
   [key]
   NULL
   c
@@ -117,7 +117,7 @@ Example:
 
 ```
 OP_RETURN
-  19iG3WTYSsbyos3uJ733yK4zEioi1FesNu
+  19iG3WTYSsbyos3uJ733yK4zEioi1FesNU
   [key]
   NULL
   NULL
