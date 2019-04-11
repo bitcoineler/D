@@ -167,7 +167,7 @@ var app = function(o) {
         let hexArray = []
         let hexKeys = []
         for (var k in appData.out[0]) {
-            if (/^(lh|h)[0-9]{1,2}$/.test(k)) { // h0-99
+            if (/^(lh|h)[0-9]{1,2}$/.test(k)) { // lh||h0-99
                 hexKeys.push(k)
                 hexArray.push(appData.out[0][k])
             }
@@ -178,7 +178,7 @@ var app = function(o) {
         protocols[p] = {}
 
         hexKeys.map(function(a) {
-            if (appData.out[0][a] == "7c") {
+            if (appData.out[0][a] == "7c") {  // | = 0x72
                 ++p
                 protocols[p] = {}
             } else {
@@ -197,7 +197,7 @@ var app = function(o) {
 
         // If D
         if (protocols.length == 1 && protocols[0][Object.keys(protocols[0])[0]] == D_hex) {
-            console.log("CASE: D | First is a D and its standalone!!!!!!")
+            console.log("Protocols: D")
             protocolType = 'D'
             isProtocol = true
             error = false
@@ -220,7 +220,7 @@ var app = function(o) {
         } else if (protocols.length == 2) {
             // If D + AIP
             if (protocols[0][Object.keys(protocols[0])[0]] == D_hex && protocols[1][Object.keys(protocols[1])[0]] == AIP_hex) {
-                console.log("CASE: D+AIP | First is a D and AIP follows !!!!!!")
+                console.log("Protocols: D+AIP")
                 protocolType = 'D+AIP'
                 isProtocol = true
                 error = false
@@ -254,7 +254,7 @@ var app = function(o) {
 
                 // If B + D
             } else if (protocols[0][Object.keys(protocols[0])[0]] == B_hex && protocols[1][Object.keys(protocols[1])[0]] == D_hex) {
-                console.log("CASE: B+D | First is a B and D follows !!!!!!")
+                console.log("Protocols: B+D")
                 protocolType = 'B+D'
                 isProtocol = true
                 error = false
@@ -295,7 +295,7 @@ var app = function(o) {
         } else if (protocols.length == 3) {
             // If B + D + AIP
             if (protocols[0][Object.keys(protocols[0])[0]] == B_hex && protocols[1][Object.keys(protocols[1])[0]] == D_hex && protocols[2][Object.keys(protocols[2])[0]] == AIP_hex) {
-                console.log("CASE: B+D+AIP | First is a B and D+AIP follows !!!!!!")
+                console.log("Protocols: B+D+AIP")
                 protocolType = 'B+D+AIP'
                 isProtocol = true
                 error = false
