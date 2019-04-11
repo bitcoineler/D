@@ -266,7 +266,7 @@ var app = function(o) {
                 type = protocols[1][Object.keys(protocols[1])[3]]
                 seq = protocols[1][Object.keys(protocols[1])[4]]
 
-                if (validateKey(key) && pointer != null && type != null && seq != null) {
+                if (validateKey(key) && pointer != null && validateType(type) && seq != null) {
                     type = Buffer(type, 'hex').toString().toLowerCase()
 
                     switch (type) {
@@ -283,10 +283,6 @@ var app = function(o) {
                             break;
                         case "b":
                             pointer = o.tx.h // D pointer = txid
-                            break;
-                        case "":
-                            pointer = o.tx.h // D pointer = txid
-			    type = "b"
                             break;
                         default:
                             error = true
@@ -313,7 +309,7 @@ var app = function(o) {
                 type = protocols[1][Object.keys(protocols[1])[3]]
                 seq = protocols[1][Object.keys(protocols[1])[4]]
 
-                if (AIPsignature != null && AIPaddress != null && validateKey(key) && pointer != null && type != null && seq != null) {
+                if (AIPsignature != null && AIPaddress != null && validateKey(key) && pointer != null && validateType(type) && seq != null) {
                     AIPsignature = Buffer.from(AIPsignature, 'hex').toString('base64');
                     AIPaddress = Buffer(AIPaddress, 'hex').toString()
                     let verified = checkAIPSig(AIPsignature, AIPaddress, hexArray)
@@ -340,10 +336,6 @@ var app = function(o) {
                             break;
                         case "b":
                             pointer = o.tx.h // D pointer = txid
-                            break;
-                        case "":
-                            pointer = o.tx.h // D pointer = txid
-			    type = "b"
                             break;
                         default:
                             error = true
