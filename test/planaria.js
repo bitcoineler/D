@@ -566,7 +566,7 @@ module.exports = {
             }
         })
 
-        // Delete all Confirmed
+        // Delete all Unconfirmed
         await m.state.delete({
             name: "u",
             filter: {
