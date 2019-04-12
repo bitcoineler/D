@@ -394,7 +394,7 @@ var app = function(o) {
             return res
 
         } else if (error) {
-            console.log("ERROR: senderAddresses:", senderAddresses, "key:", key, "value:", value, "type:", type, "seq:", seq, "txid:", o.tx.h, "validateKey:", validateKey(key), "validatePointer:", validateValue(value), "validateType:", validateType(type))
+            console.log("ERROR: senderAddresses:", senderAddresses, "key:", key, "value:", value, "type:", type, "seq:", seq, "txid:", o.tx.h, "validateKey:", validateKey(key), "validateValue:", validateValue(value), "validateType:", validateType(type))
         }
     } else {
         return null
