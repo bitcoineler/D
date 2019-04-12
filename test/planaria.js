@@ -242,8 +242,11 @@ var app = function(o) {
                     AIPsignature = Buffer.from(AIPsignature, 'hex').toString();
                     AIPaddress = Buffer(AIPaddress, 'hex').toString()
 
+                    let dataLen = Object.keys(protocols[0]).length + 1 // B.length + 1x"0x7c"
+                    let AIPData = hexArray.slice(0, dataLen)
+
                     try {
-                        verified = checkAIPSig(AIPsignature, AIPaddress, hexArray)
+                        verified = checkAIPSig(AIPsignature, AIPaddress, AIPData)
                     } catch (e) {
                         console.log("ERROR checkAIPSig: ", e)
                         error = true
