@@ -72,6 +72,7 @@ const parseSeq = function(seq) {
 
 
 var updateState = async function(m, o) {
+    console.log("UPDATED: ", o)
     await m.state.update({
         name: "state",
         filter: {
@@ -104,6 +105,7 @@ var updateState = async function(m, o) {
 }
 
 var createState = async function(m, o) {
+    console.log("CREATED: ", o)
     await m.state.create({
         name: "state",
         data: o,
@@ -178,7 +180,7 @@ var app = function(o) {
         protocols[p] = {}
 
         hexKeys.map(function(a) {
-            if (appData.out[0][a] == "7c") {  // | = 0x72
+            if (appData.out[0][a] == "7c") { // | = 0x72
                 ++p
                 protocols[p] = {}
             } else {
@@ -194,6 +196,7 @@ var app = function(o) {
         let protocolType
         let isProtocol = false
         let error = false
+        let verified = false
 
         // If D
         if (protocols.length == 1 && protocols[0][Object.keys(protocols[0])[0]] == D_hex) {
@@ -236,18 +239,26 @@ var app = function(o) {
 
 
                 if (AIPsignature != null && AIPaddress != null && validateKey(key) && validatePointer(pointer) && validateType(type) && seq != null) {
-                    AIPsignature = Buffer.from(AIPsignature, 'hex').toString('base64');
+                    AIPsignature = Buffer.from(AIPsignature, 'hex').toString();
                     AIPaddress = Buffer(AIPaddress, 'hex').toString()
-                    let verified = checkAIPSig(AIPsignature, AIPaddress, hexArray)
 
-                    if (verified) {
-                        senderAddresses = [appData.in[0].e.a, AIPaddress] // funding source Address & AIP Signing Address
-                    } else {
-                        senderAddresses = [appData.in[0].e.a] // only funding source Address becasue AIP failed to verify
+                    try {
+                        verified = checkAIPSig(AIPsignature, AIPaddress, hexArray)
+                    } catch (e) {
+                        console.log("ERROR checkAIPSig: ", e)
+                        error = true
                     }
 
-                    pointer = Buffer(pointer, 'hex').toString()
-                    type = Buffer(type, 'hex').toString()
+                    if (!error) {
+                        if (verified) {
+                            senderAddresses = [appData.in[0].e.a, AIPaddress] // funding source Address & AIP Signing Address
+                        } else {
+                            senderAddresses = [appData.in[0].e.a] // only funding source Address becasue AIP failed to verify
+                        }
+
+                        pointer = Buffer(pointer, 'hex').toString()
+                        type = Buffer(type, 'hex').toString()
+                    }
                 } else {
                     error = true
                 }
@@ -300,8 +311,8 @@ var app = function(o) {
                 isProtocol = true
                 error = false
 
-                let AIPsignature = protocols[2][Object.keys(protocols[2])[3]]
                 let AIPaddress = protocols[2][Object.keys(protocols[2])[2]]
+                let AIPsignature = protocols[2][Object.keys(protocols[2])[3]]
 
                 // D is at position 1
                 key = protocols[1][Object.keys(protocols[1])[1]]
@@ -309,38 +320,52 @@ var app = function(o) {
                 type = protocols[1][Object.keys(protocols[1])[3]]
                 seq = protocols[1][Object.keys(protocols[1])[4]]
 
+
                 if (AIPsignature != null && AIPaddress != null && validateKey(key) && pointer != null && validateType(type) && seq != null) {
-                    AIPsignature = Buffer.from(AIPsignature, 'hex').toString('base64');
+                    AIPsignature = Buffer(AIPsignature, 'hex').toString()
                     AIPaddress = Buffer(AIPaddress, 'hex').toString()
-                    let verified = checkAIPSig(AIPsignature, AIPaddress, hexArray)
 
-                    if (verified) {
-                        senderAddresses = [appData.in[0].e.a, AIPaddress] // funding source Address & AIP Signing Address
-                    } else {
-                        senderAddresses = [appData.in[0].e.a] // only funding source Address becasue AIP failed to verify
+                    let dataLen = Object.keys(protocols[0]).length + Object.keys(protocols[1]).length + 2 // B.length + D.length + 2x"0x7c"
+                    let AIPData = hexArray.slice(0, dataLen)
+
+                    console.log("AIP DATA: ", AIPsignature, AIPaddress, AIPData)
+
+                    try {
+                        verified = checkAIPSig(AIPsignature, AIPaddress, AIPData)
+                    } catch (e) {
+                        console.log("ERROR checkAIPSig: ", e)
+                        error = true
                     }
 
-                    type = Buffer(type, 'hex').toString().toLowerCase()
+                    if (!error) {
+                        if (verified) {
+                            senderAddresses = [appData.in[0].e.a, AIPaddress] // funding source Address & AIP Signing Address
+                        } else {
+                            senderAddresses = [appData.in[0].e.a] // only funding source Address becasue AIP failed to verify
+                            console.log("VERIFY FAILED: ", verified, AIPsignature, AIPaddress, AIPData)
+                        }
 
-                    switch (type) {
-                        case "c":
-                            if (appData.out[0].lb2 && typeof appData.out[0].lb2 === 'string') {
-                                buf = Buffer.from(appData.out[0].lb2, 'base64');
-                                pointer = crypto.createHash('sha256').update(buf).digest('hex');
-                            } else if (appData.out[0].b2 && typeof appData.out[0].b2 === 'string') {
-                                buf = Buffer.from(appData.out[0].b2, 'base64');
-                                pointer = crypto.createHash('sha256').update(buf).digest('hex');
-                            } else {
+                        type = Buffer(type, 'hex').toString().toLowerCase()
+
+                        switch (type) {
+                            case "c":
+                                if (appData.out[0].lb2 && typeof appData.out[0].lb2 === 'string') {
+                                    buf = Buffer.from(appData.out[0].lb2, 'base64');
+                                    pointer = crypto.createHash('sha256').update(buf).digest('hex');
+                                } else if (appData.out[0].b2 && typeof appData.out[0].b2 === 'string') {
+                                    buf = Buffer.from(appData.out[0].b2, 'base64');
+                                    pointer = crypto.createHash('sha256').update(buf).digest('hex');
+                                } else {
+                                    error = true
+                                }
+                                break;
+                            case "b":
+                                pointer = o.tx.h // D pointer = txid
+                                break;
+                            default:
                                 error = true
-                            }
-                            break;
-                        case "b":
-                            pointer = o.tx.h // D pointer = txid
-                            break;
-                        default:
-                            error = true
+                        }
                     }
-
                 } else {
                     error = true
                 }
@@ -379,10 +404,10 @@ var app = function(o) {
 module.exports = {
     planaria: '0.0.1',
     from: 573500,
-    name: 'D://-Test',
+    name: 'D://',
     version: '0.0.1',
     description: 'Bitcoin dynamic content protocol',
-    address: '17Tbhr3z59dx2qawn3kQAypCt2Hpbx7Tvt',
+    address: '1G3BpTyEK6xF4LaQTHqdFBBaVxYHZzts4M',
     index: {
         u: {
             keys: [
@@ -580,4 +605,3 @@ module.exports = {
         })
     }
 }
-
