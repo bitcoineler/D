@@ -9,7 +9,7 @@ module.exports = {
                 "limit": 100
             },
             "r": {
-                "f": "[.[] | { protocols: .protocols, transaction: .txid, block: .blk, sender: .sender , key: .key, pointer: .pointer, type: .type, seq: .seq, \"URI over https\": (if .type == \"c\" then \"https://data.bitdb.network/1KuUr2pSJDao97XM8Jsq8zwLS6W1WtFfLg/c/\\(.pointer)\" elif .type == \"txt\" then null else \"https://b.bitdb.network#\\(.pointer)\" end)}]"
+                "f": "[.[] | { protocols: .protocols, transaction: .txid, block: .blk, sender: .sender , key: .key, value: .value, type: .type, seq: .seq, \"URI over https\": (if .type == \"c\" then \"https://data.bitdb.network/1KuUr2pSJDao97XM8Jsq8zwLS6W1WtFfLg/c/\\(.pointer)\" elif .type == \"txt\" then null else \"https://b.bitdb.network#\\(.pointer)\" end)}]"
             }
         },
         api: {
@@ -34,7 +34,7 @@ module.exports = {
                 "limit": 100
             },
             "r": {
-                "f": "[.[] | { protocols: .protocols, transaction: .txid, block: .blk, sender: .sender , key: .key, pointer: .pointer, type: .type, seq: .seq, \"URI over https\": (if .type == \"c\" then \"https://data.bitdb.network/1KuUr2pSJDao97XM8Jsq8zwLS6W1WtFfLg/c/\\(.pointer)\" elif .type == \"txt\" then null else \"https://b.bitdb.network#\\(.pointer)\" end)}]"
+                "f": "[.[] | { protocols: .protocols, transaction: .txid, block: .blk, sender: .sender , key: .key, value: .value, type: .type, seq: .seq, \"URI over https\": (if .type == \"c\" then \"https://data.bitdb.network/1KuUr2pSJDao97XM8Jsq8zwLS6W1WtFfLg/c/\\(.pointer)\" elif .type == \"txt\" then null else \"https://b.bitdb.network#\\(.pointer)\" end)}]"
             }
         },
         api: {},

@@ -32,15 +32,15 @@ const validateKey = function(key) {
     return false
 }
 
-const pointerRegex = "^[a-zA-Z0-9_~/@!$&*+,.:;=-]+$"
-const maxPointerLength = 2083 //max URL length in IE
+const valueRegex = "^[a-zA-Z0-9_~/@!$&*+,.:;=-]+$"
+const maxValueLength = 2083 //max URL length in IE
 
-const validatePointer = function(pointer) {
-    if (pointer != null) {
-        pointer = Buffer(pointer, 'hex').toString()
-        var patt = new RegExp(pointerRegex)
-        var res = patt.test(pointer)
-        if (res && pointer.length <= maxPointerLength) {
+const validateValue = function(value) {
+    if (value != null) {
+        value = Buffer(value, 'hex').toString()
+        var patt = new RegExp(valueRegex)
+        var res = patt.test(value)
+        if (res && value.length <= maxValueLength) {
             return true
         }
     }
@@ -85,7 +85,7 @@ var updateState = async function(m, o) {
             item.blk.i = o.blk.i
             item.blk.t = o.blk.t
             item.txid = o.txid
-            item.pointer = o.pointer
+            item.value = o.value
             item.type = o.type
             item.protocols = o.protocols
 
@@ -190,7 +190,7 @@ var app = function(o) {
 
         let senderAddresses = []
         let key
-        let pointer
+        let value
         let type
         let seq
         let protocolType
@@ -209,12 +209,12 @@ var app = function(o) {
 
             // D is position 0
             key = protocols[0][Object.keys(protocols[0])[1]]
-            pointer = protocols[0][Object.keys(protocols[0])[2]]
+            value = protocols[0][Object.keys(protocols[0])[2]]
             type = protocols[0][Object.keys(protocols[0])[3]]
             seq = protocols[0][Object.keys(protocols[0])[4]]
 
-            if (validateKey(key) && validatePointer(pointer) && validateType(type) && seq != null) {
-                pointer = Buffer(pointer, 'hex').toString()
+            if (validateKey(key) && validateValue(value) && validateType(type) && seq != null) {
+                value = Buffer(value, 'hex').toString()
                 type = Buffer(type, 'hex').toString()
             } else {
                 error = true
@@ -233,12 +233,12 @@ var app = function(o) {
 
                 // D is at position 0
                 key = protocols[0][Object.keys(protocols[0])[1]]
-                pointer = protocols[0][Object.keys(protocols[0])[2]]
+                value = protocols[0][Object.keys(protocols[0])[2]]
                 type = protocols[0][Object.keys(protocols[0])[3]]
                 seq = protocols[0][Object.keys(protocols[0])[4]]
 
 
-                if (AIPsignature != null && AIPaddress != null && validateKey(key) && validatePointer(pointer) && validateType(type) && seq != null) {
+                if (AIPsignature != null && AIPaddress != null && validateKey(key) && validateValue(value) && validateType(type) && seq != null) {
                     AIPsignature = Buffer.from(AIPsignature, 'hex').toString();
                     AIPaddress = Buffer(AIPaddress, 'hex').toString()
 
@@ -256,7 +256,7 @@ var app = function(o) {
                             senderAddresses = [appData.in[0].e.a] // only funding source Address becasue AIP failed to verify
                         }
 
-                        pointer = Buffer(pointer, 'hex').toString()
+                        value = Buffer(value, 'hex').toString()
                         type = Buffer(type, 'hex').toString()
                     }
                 } else {
@@ -273,27 +273,27 @@ var app = function(o) {
                 // D is at position 1
                 senderAddresses = [appData.in[0].e.a] // funding source sender Address
                 key = protocols[1][Object.keys(protocols[1])[1]]
-                pointer = protocols[1][Object.keys(protocols[1])[2]]
+                value = protocols[1][Object.keys(protocols[1])[2]]
                 type = protocols[1][Object.keys(protocols[1])[3]]
                 seq = protocols[1][Object.keys(protocols[1])[4]]
 
-                if (validateKey(key) && pointer != null && validateType(type) && seq != null) {
+                if (validateKey(key) && value != null && validateType(type) && seq != null) {
                     type = Buffer(type, 'hex').toString().toLowerCase()
 
                     switch (type) {
                         case "c":
                             if (appData.out[0].lb2 && typeof appData.out[0].lb2 === 'string') {
                                 buf = Buffer.from(appData.out[0].lb2, 'base64');
-                                pointer = crypto.createHash('sha256').update(buf).digest('hex');
+                                value = crypto.createHash('sha256').update(buf).digest('hex');
                             } else if (appData.out[0].b2 && typeof appData.out[0].b2 === 'string') {
                                 buf = Buffer.from(appData.out[0].b2, 'base64');
-                                pointer = crypto.createHash('sha256').update(buf).digest('hex');
+                                value = crypto.createHash('sha256').update(buf).digest('hex');
                             } else {
                                 error = true
                             }
                             break;
                         case "b":
-                            pointer = o.tx.h // D pointer = txid
+                            value = o.tx.h // D value = txid
                             break;
                         default:
                             error = true
@@ -316,12 +316,12 @@ var app = function(o) {
 
                 // D is at position 1
                 key = protocols[1][Object.keys(protocols[1])[1]]
-                pointer = protocols[1][Object.keys(protocols[1])[2]]
+                value = protocols[1][Object.keys(protocols[1])[2]]
                 type = protocols[1][Object.keys(protocols[1])[3]]
                 seq = protocols[1][Object.keys(protocols[1])[4]]
 
 
-                if (AIPsignature != null && AIPaddress != null && validateKey(key) && pointer != null && validateType(type) && seq != null) {
+                if (AIPsignature != null && AIPaddress != null && validateKey(key) && value != null && validateType(type) && seq != null) {
                     AIPsignature = Buffer(AIPsignature, 'hex').toString()
                     AIPaddress = Buffer(AIPaddress, 'hex').toString()
 
@@ -351,16 +351,16 @@ var app = function(o) {
                             case "c":
                                 if (appData.out[0].lb2 && typeof appData.out[0].lb2 === 'string') {
                                     buf = Buffer.from(appData.out[0].lb2, 'base64');
-                                    pointer = crypto.createHash('sha256').update(buf).digest('hex');
+                                    value = crypto.createHash('sha256').update(buf).digest('hex');
                                 } else if (appData.out[0].b2 && typeof appData.out[0].b2 === 'string') {
                                     buf = Buffer.from(appData.out[0].b2, 'base64');
-                                    pointer = crypto.createHash('sha256').update(buf).digest('hex');
+                                    value = crypto.createHash('sha256').update(buf).digest('hex');
                                 } else {
                                     error = true
                                 }
                                 break;
                             case "b":
-                                pointer = o.tx.h // D pointer = txid
+                                value = o.tx.h // D value = txid
                                 break;
                             default:
                                 error = true
@@ -385,7 +385,7 @@ var app = function(o) {
                     txid: o.tx.h,
                     sender: senderAddresses[i],
                     key: key,
-                    pointer: pointer,
+                    value: value,
                     type: type,
                     seq: seq,
                     protocols: protocolType,
@@ -394,7 +394,7 @@ var app = function(o) {
             return res
 
         } else if (error) {
-            console.log("ERROR: senderAddresses:", senderAddresses, "key:", key, "pointer:", pointer, "type:", type, "seq:", seq, "txid:", o.tx.h, "validateKey:", validateKey(key), "validatePointer:", validatePointer(pointer), "validateType:", validateType(type))
+            console.log("ERROR: senderAddresses:", senderAddresses, "key:", key, "value:", value, "type:", type, "seq:", seq, "txid:", o.tx.h, "validateKey:", validateKey(key), "validatePointer:", validateValue(value), "validateType:", validateType(type))
         }
     } else {
         return null
@@ -411,17 +411,17 @@ module.exports = {
     index: {
         u: {
             keys: [
-                'txid', 'sender', 'key', 'pointer', 'type', 'seq'
+                'txid', 'sender', 'key', 'value', 'type', 'seq'
             ]
         },
         c: {
             keys: [
-                'txid', 'sender', 'key', 'pointer', 'type', 'seq', 'blk.i', 'blk.t'
+                'txid', 'sender', 'key', 'value', 'type', 'seq', 'blk.i', 'blk.t'
             ]
         },
         state: {
             keys: [
-                'txid', 'sender', 'key', 'pointer', 'type', 'blk.i', 'blk.t'
+                'txid', 'sender', 'key', 'value', 'type', 'blk.i', 'blk.t'
             ]
         }
     },
