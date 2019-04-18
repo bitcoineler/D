@@ -223,8 +223,8 @@ var app = function(o) {
         } else if (protocols.length == 2) {
             // If D + AIP
             if (protocols[0][Object.keys(protocols[0])[0]] == D_hex && protocols[1][Object.keys(protocols[1])[0]] == AIP_hex) {
-                console.log("Protocols: D+AIP")
-                protocolType = 'D+AIP'
+                console.log("Protocols: D|AIP")
+                protocolType = 'D|AIP'
                 isProtocol = true
                 error = false
 
@@ -268,8 +268,8 @@ var app = function(o) {
 
                 // If B + D
             } else if (protocols[0][Object.keys(protocols[0])[0]] == B_hex && protocols[1][Object.keys(protocols[1])[0]] == D_hex) {
-                console.log("Protocols: B+D")
-                protocolType = 'B+D'
+                console.log("Protocols: B|D")
+                protocolType = 'B|D'
                 isProtocol = true
                 error = false
 
@@ -309,8 +309,8 @@ var app = function(o) {
         } else if (protocols.length == 3) {
             // If B + D + AIP
             if (protocols[0][Object.keys(protocols[0])[0]] == B_hex && protocols[1][Object.keys(protocols[1])[0]] == D_hex && protocols[2][Object.keys(protocols[2])[0]] == AIP_hex) {
-                console.log("Protocols: B+D+AIP")
-                protocolType = 'B+D+AIP'
+                console.log("Protocols: B|D|AIP")
+                protocolType = 'B|D|AIP'
                 isProtocol = true
                 error = false
 
