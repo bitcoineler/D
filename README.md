@@ -33,16 +33,38 @@ OP_RETURN
   [sequence]
 ```
 
-*  `key`: NULL or a utf8 encoded string no longer than 1024 chars __not__ starting with `/` and not including the chars `[\x00-\x1F\x7F?#]`. It is suggested to simulate a folder like structure in a URI styled manner. Even if (almost) all utf8 chars are allowed it is not to be considered an [IRI](https://en.wikipedia.org/wiki/Internationalized_Resource_Identifier) and `key` must be url-escaped to become a valid [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) whenever presented to a user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
+*  `key`: 
+  * NULL or 
+  * a utf8 encoded string no longer than 1024 bytes __not__ starting with `/` and not including the chars `[\x00-\x1F\x7F?#]`. It is suggested to simulate a folder like structure in a URI styled manner. Even if (almost) all utf8 chars are allowed it is not to be considered an [IRI](https://en.wikipedia.org/wiki/Internationalized_Resource_Identifier) as `key` must be url-escaped to become a valid [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) whenever presented to a user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
 
-*  `value`: NULL, a string with the hex value of the txid of a b://, a string with the hex value of the hash of a c:// or a utf8 encoded string no onger than 2086 chars.
+*  `value`: 
+  * NULL 
+  * a string utf8 encoded string no longer than 2086 bytes.
 
-*  `type`: NULL, the string `c` or `b` indicating the nature of a the content in the value field or the text "txt" to indicate that the value field contains the actual content. For Internal references it must be the string 'tx' indicating that the latest update to state must reference the current transaction (see next section)
+*  `type`: 
+  * NULL
+  * the string `c` indicating that `value` contains the sha256 hash of the targeted content 
+  * the string `b` indicating that `value` contains the transaction ID of a b:// formatted transaction 
+  * the string `tx` to indicate that `value` contains the transaction ID of a transaction 
+ For Internal references `type` must be set to the string `tx` indicating that the latest update to state must reference the current transaction (see next section)
+  * The string `txt` indicating that `value` contains the full content of the lates state.
+  
+*  `sequence`: 
+  * Integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
 
-*  `sequence`: Integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
+Example:
+
+```
+OP_RETURN
+  19iG3WTYSsbyos3uJ733yK4zEioi1FesNU
+  "zebra.jpeg"
+  0f9e7b6542eba739bd407323f58d75327dd1d68a53d2a535337a4dcf0ddb0edc
+  tx
+  1
+```
 
 ### Internal reference
-A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename). `type` must always be `c` or `b` and `value` field will always be ignored. 
+A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename). `type` must always be `tx` and `value` field will always be ignored. 
 
 ```
 OP_RETURN
@@ -55,7 +77,7 @@ OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNU
   [key]
   NULL
-  <c|b>
+  tx
   [sequence]
 ```
 
@@ -97,7 +119,7 @@ OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNU
   [key]
   NULL
-  c
+  tx
   [sequence]
   |
   15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva
@@ -127,17 +149,24 @@ OP_RETURN
 #### Example Tx
 This is an example Website with D:// link in it: https://bico.media/0363e9addc3f5de6587b250a07c4bab00f58f54cf780aa5f0f4655a8d3e4cfa5
 
-This should map <img src="D://19iG3WTYSsbyos3uJ733yK4zEioi1FesNU/der_wolf_und_die_sieben_geislein.jpeg"> ==> C://c808b8aa7bf72a0732d1a366d530b6ad3cdea1f25cbe075ca075dc1f55006e5e ==> B://efb301edd3a8b2270aea61cdc46bd923130a8c05245f763ff3c3c8fea1f0fc27
+The image is mapped like
+
+```
+<img src="D://19iG3WTYSsbyos3uJ733yK4zEioi1FesNU/der_wolf_und_die_sieben_geislein.jpeg">` 
+  ==> C://c808b8aa7bf72a0732d1a366d530b6ad3cdea1f25cbe075ca075dc1f55006e5e 
+    ==> B://efb301edd3a8b2270aea61cdc46bd923130a8c05245f763ff3c3c8fea1f0fc27
+```
 
 
 State machine D:// tx:  https://whatsonchain.com/tx/329eacb2d1ab8770ac01d2daa13a852d72282379ea26caca1729817315fb12b0
 
-State machine Query: https://d.onchain.ch/query/1G3BpTyEK6xF4LaQTHqdFBBaVxYHZzts4M/ewogICJ2IjogMywKICAicSI6IHsKICAgICJmaW5kIjogewogICAgICAic2VuZGVyIjoiMTlpRzNXVFlTc2J5b3MzdUo3MzN5SzR6RWlvaTFGZXNOVSIsCiAgICAgICJhbGlhcyI6ImRlcl93b2xmX3VuZF9kaWVfc2llYmVuX2dlaXNsZWluLmpwZWciCiAgICB9LAogICAgImxpbWl0IjogMTAwCiAgfSwKICAiciI6IHsKICAgICJmIjogIlsuW10gfCB7IHRyYW5zYWN0aW9uOiAudHhpZCwgYmxvY2s6IC5ibGsuaSwgc2VuZGVyOiAuc2VuZGVyICwgYWxpYXM6IC5hbGlhcywgcG9pbnRlcjogLnBvaW50ZXIsY250OiAuY250LCB0eXBlOiAudHlwZSAsIHNlcTogLnNlcSAsIFwiVVJJIG92ZXIgaHR0cHNcIjogKGlmIC50eXBlID09IFwiY1wiIHRoZW4gXCJodHRwczovL2RhdGEuYml0ZGIubmV0d29yay8xS3VVcjJwU0pEYW85N1hNOEpzcTh6d0xTNlcxV3RGZkxnL2MvXFwoLnBvaW50ZXIpXCIgZWxzZSBcImh0dHBzOi8vYi5iaXRkYi5uZXR3b3JrI1xcKC5wb2ludGVyKVwiIGVuZCl9XSIKICB9Cn0=
+State machine Query:
+    https://d.onchain.ch/query/1G3BpTyEK6xF4LaQTHqdFBBaVxYHZzts4M/ewogICJ2IjogMywKICAicSI6IHsKICAgICJmaW5kIjogewogICAgICAic2VuZGVyIjoiMTlpRzNXVFlTc2J5b3MzdUo3MzN5SzR6RWlvaTFGZXNOVSIsCiAgICAgICJhbGlhcyI6ImRlcl93b2xmX3VuZF9kaWVfc2llYmVuX2dlaXNsZWluLmpwZWciCiAgICB9LAogICAgImxpbWl0IjogMTAwCiAgfSwKICAiciI6IHsKICAgICJmIjogIlsuW10gfCB7IHRyYW5zYWN0aW9uOiAudHhpZCwgYmxvY2s6IC5ibGsuaSwgc2VuZGVyOiAuc2VuZGVyICwgYWxpYXM6IC5hbGlhcywgcG9pbnRlcjogLnBvaW50ZXIsY250OiAuY250LCB0eXBlOiAudHlwZSAsIHNlcTogLnNlcSAsIFwiVVJJIG92ZXIgaHR0cHNcIjogKGlmIC50eXBlID09IFwiY1wiIHRoZW4gXCJodHRwczovL2RhdGEuYml0ZGIubmV0d29yay8xS3VVcjJwU0pEYW85N1hNOEpzcTh6d0xTNlcxV3RGZkxnL2MvXFwoLnBvaW50ZXIpXCIgZWxzZSBcImh0dHBzOi8vYi5iaXRkYi5uZXR3b3JrI1xcKC5wb2ludGVyKVwiIGVuZCl9XSIKICB9Cn0=
 
 
 ## Referencing
 
-A D:// transaction is referenced by `D://<OwnerBitcoinAddress>/<key>`
+A D:// transaction is referenced by `D://<OwnerBitcoinAddress>/<key>` or `bit://19iG3WTYSsbyos3uJ733yK4zEioi1FesNU/<key>`
 
 - Key must always be presented as a URL encoded string
 
@@ -145,7 +174,7 @@ A D:// transaction is referenced by `D://<OwnerBitcoinAddress>/<key>`
 
 - In case no key is provided the `/` is optional
 
-- In case no key is provided, the content will tentatively be derived from the first of the following keys with a none deleted d:// transaction:
+- In case no key is provided, the content will tentatively be derived from the first of the following keys with an existing and none-deleted d:// transaction:
   1. The key of `NULL` value (`0x00`)
   2. The key `index.html` 
   2. The key `index.htm` 
@@ -156,14 +185,17 @@ A D:// transaction is referenced by `D://<OwnerBitcoinAddress>/<key>`
 
 ## Links
 
-D:// Transactions:<br> https://babel.bitdb.network/query/1DHDifPvtPgKFPZMRSxmVHhiPvFmxZwbfh/ewogICJ2IjogMywKICAicSI6IHsKICAgICJmaW5kIjogewogICAgICAib3V0LnMxIjogIjE5aUczV1RZU3NieW9zM3VKNzMzeUs0ekVpb2kxRmVzTlUiCiAgICB9LAogICAgImxpbWl0IjogMTAwCiAgfSwKICAiciI6IHsKICAgICJmIjogIlsuW10gfCB7IHRyYW5zYWN0aW9uOiAudHguaCwgYmxvY2s6IC5ibGssIHNlbmRlcjogLmluWzBdLmUuYSAsYXBwSUQ6IC5vdXRbMF0uczEsIGFsaWFzOiAub3V0WzBdLnMyLCBwb2ludGVyOiAub3V0WzBdLnMzLCB0eXBlOiAub3V0WzBdLnM0ICwgc2VxOiAub3V0WzBdLnM1ICxcIlVSSSBvdmVyIGh0dHBcIjogXCJodHRwczovL2RhdGEuYml0ZGIubmV0d29yay8xS3VVcjJwU0pEYW85N1hNOEpzcTh6d0xTNlcxV3RGZkxnL1xcKC5vdXRbMF0uczQpXC9cXCgub3V0WzBdLnMzKVwifV0iCiAgfQp9
+- A [D:// Transactions](https://babel.bitdb.network/query/1DHDifPvtPgKFPZMRSxmVHhiPvFmxZwbfh/ewogICJ2IjogMywKICAicSI6IHsKICAgICJmaW5kIjogewogICAgICAib3V0LnMxIjogIjE5aUczV1RZU3NieW9zM3VKNzMzeUs0ekVpb2kxRmVzTlUiCiAgICB9LAogICAgImxpbWl0IjogMTAwCiAgfSwKICAiciI6IHsKICAgICJmIjogIlsuW10gfCB7IHRyYW5zYWN0aW9uOiAudHguaCwgYmxvY2s6IC5ibGssIHNlbmRlcjogLmluWzBdLmUuYSAsYXBwSUQ6IC5vdXRbMF0uczEsIGFsaWFzOiAub3V0WzBdLnMyLCBwb2ludGVyOiAub3V0WzBdLnMzLCB0eXBlOiAub3V0WzBdLnM0ICwgc2VxOiAub3V0WzBdLnM1ICxcIlVSSSBvdmVyIGh0dHBcIjogXCJodHRwczovL2RhdGEuYml0ZGIubmV0d29yay8xS3VVcjJwU0pEYW85N1hNOEpzcTh6d0xTNlcxV3RGZkxnL1xcKC5vdXRbMF0uczQpXC9cXCgub3V0WzBdLnMzKVwifV0iCiAgfQp9)
 
-D:// State Machine:<br>
-https://d.onchain.ch/query/1G3BpTyEK6xF4LaQTHqdFBBaVxYHZzts4M
+- The [D:// State Machine](https://d.onchain.ch/query/1G3BpTyEK6xF4LaQTHqdFBBaVxYHZzts4M)
 
 
-#### ...
+#### Future ideas
 * An API that resolves D:// links to txids or an API that returns even the file data can be built.
 * Get a list of "files" in a directory (find all current tx with a key that starts with `xyz/` for a specific owner)
-* Multiple signatures to share control. 
-* X out of N signatures to share control.
+* Multiple signatures to share control
+* X out of N signatures to share control
+
+----
+
+_D:// was born as a brainchild of SH and @rangelWulff_
