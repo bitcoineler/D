@@ -17,7 +17,7 @@ The owner/key combination prevents an unauthorised person from changing the stat
 
 - The prefix for D is [19iG3WTYSsbyos3uJ733yK4zEioi1FesNU](https://genesis.bitdb.network/query/1FnauZ9aUH2Bex6JzdcV4eNX7oLSSEbxtN/ewogICJ2IjogMywKICAicSI6IHsKICAgICJmaW5kIjogewogICAgICAiaW4uZS5hIjogIjE5aUczV1RZU3NieW9zM3VKNzMzeUs0ekVpb2kxRmVzTlUiLAogICAgICAib3V0LnMxIjogIiQiCiAgICB9LAogICAgInNvcnQiOiB7CiAgICAgICJ0aW1lc3RhbXAiOiAxCiAgICB9LAogICAgImxpbWl0IjogMTAKICB9Cn0=), generated using [Bitcom](https://bitcom.bitdb.network)
 
-The sender of the transaction will alway be an "owner" of the state = first input address will be able to change the state again.
+The sender of the transaction will always be an "owner" of the state = first input address will be able to change the state again.
 
 D:// transactions comes in 2 variants. 
 
@@ -32,25 +32,23 @@ OP_RETURN
   [type]
   [sequence]
 ```
+- `key` must have one of the following values: 
+  - NULL
+  - An utf-8 encoded string no longer than 1024 bytes __not__ starting with `/` and not including the chars `[\x00-\x1F\x7F?#]`. It is suggested to simulate a folder like structure in a URI styled manner. Even if (almost) all utf8 chars are allowed it is not to be considered an [IRI](https://en.wikipedia.org/wiki/Internationalized_Resource_Identifier) as `key` must be url-escaped to become a valid [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) whenever presented to a user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
 
-*  `key`: 
-  * NULL or 
-  * a utf8 encoded string no longer than 1024 bytes __not__ starting with `/` and not including the chars `[\x00-\x1F\x7F?#]`. It is suggested to simulate a folder like structure in a URI styled manner. Even if (almost) all utf8 chars are allowed it is not to be considered an [IRI](https://en.wikipedia.org/wiki/Internationalized_Resource_Identifier) as `key` must be url-escaped to become a valid [URI](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier) whenever presented to a user. Only using `[a-zA-Z0-9_~/@!$&*+,.:;=-]` is therefore advisable.
+- `value` must have one of the following values:
+  - NULL 
+  - a string utf8 encoded string no longer than 2086 bytes.
+ 
+- `type` must have one of the following values:
+  - NULL
+  - the string `c` indicating that `value` contains the sha256 hash of the targeted content 
+  - the string `b` indicating that `value` contains the transaction ID of a b:// formatted transaction. For internal references `type` must be set to the string `b` indicating that target transaction is a b:// formatted transaction.
+  - the string `tx` to indicate that `value` contains the transaction ID of a transaction 
+  - The string `txt` indicating that `value` contains the full content of the latest state.
 
-*  `value`: 
-  * NULL 
-  * a string utf8 encoded string no longer than 2086 bytes.
-
-*  `type`: 
-  * NULL
-  * the string `c` indicating that `value` contains the sha256 hash of the targeted content 
-  * the string `b` indicating that `value` contains the transaction ID of a b:// formatted transaction 
-  * the string `tx` to indicate that `value` contains the transaction ID of a transaction 
- For Internal references `type` must be set to the string `tx` indicating that the latest update to state must reference the current transaction (see next section)
-  * The string `txt` indicating that `value` contains the full content of the lates state.
-  
-*  `sequence`: 
-  * Integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
+- `sequence` must have one of the following values:
+  - An integer larger than 0 and smaller than 2^53-1. Everything that is not a number or a negative number is considered to be `1`. Used to indicate the order of events if multiple updates are provided in the same block to the same key from the same owner. 
 
 Example:
 
@@ -88,7 +86,7 @@ OP_RETURN
 
 ### Explicit owner
 
-Both transactions with internal and external references can add an explicit owner by piping the [AIP protocol](https://github.com/BitcoinFiles/AUTHOR_IDENTITY_PROTOCOL) that signs all previus fields (API_ALL). 
+Both transactions with internal and external references can add an explicit owner by piping the [AIP protocol](https://github.com/BitcoinFiles/AUTHOR_IDENTITY_PROTOCOL) that signs all previous fields (API_ALL). 
 
 Example A:
 
@@ -128,7 +126,7 @@ OP_RETURN
   [Signature]
 ```
 
-If a transaction includes a valid AIP signature and the signature involves all previous fields (AIP_ALL) both the sender and AIP signing address will create an update state for `key`. Effectively this means that you will be able to access the content with both `D://<tx sender address>/<key>` and `D://<AIP signing address>/<key>`.
+If a transaction includes a valid AIP signature and the signature involves all previous fields (AIP_ALL) both the sender and AIP signing address will create an updated state for `key`. Effectively this means that you will be able to access the content with both `D://<tx sender address>/<key>` and `D://<AIP signing address>/<key>`.
 
 
 ### Delete
@@ -195,6 +193,7 @@ A D:// transaction is referenced by `D://<OwnerBitcoinAddress>/<key>` or `bit://
 * Get a list of "files" in a directory (find all current tx with a key that starts with `xyz/` for a specific owner)
 * Multiple signatures to share control
 * X out of N signatures to share control
+* Support D:// piped on any type of transaction
 
 ----
 
