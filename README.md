@@ -117,7 +117,7 @@ OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNU
   [key]
   NULL
-  tx
+  b
   [sequence]
   |
   15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva
