@@ -62,7 +62,7 @@ OP_RETURN
 ```
 
 ### Internal reference
-A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename). `type` must always be `tx` and `value` field will always be ignored. 
+A D:// transaction with internal reference is piped directly on to a B:// formatted structure (with mandatory fields for encoding and filename). `type` must always be `b` and `value` field will always be ignored. 
 
 ```
 OP_RETURN
@@ -75,7 +75,7 @@ OP_RETURN
   19iG3WTYSsbyos3uJ733yK4zEioi1FesNU
   [key]
   NULL
-  tx
+  b
   [sequence]
 ```
 
