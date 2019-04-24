@@ -164,7 +164,7 @@ State machine Query:
 
 ## Referencing
 
-A D:// transaction is referenced by `D://<OwnerBitcoinAddress>/<key>` or `bit://19iG3WTYSsbyos3uJ733yK4zEioi1FesNU/<key>`
+A D:// transaction is referenced by `D://<OwnerBitcoinAddress>/<key>` or `bit://19iG3WTYSsbyos3uJ733yK4zEioi1FesNU/<OwnerBitcoinAddress>/<key>`
 
 - Key must always be presented as a URL encoded string
 
