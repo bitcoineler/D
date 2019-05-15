@@ -198,3 +198,4 @@ A D:// transaction is referenced by `D://<OwnerBitcoinAddress>/<key>` or `bit://
 ----
 
 _D:// was born as a brainchild of SH and @rangelWulff_
+
