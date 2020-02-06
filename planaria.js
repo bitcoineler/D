@@ -48,7 +48,7 @@ const validateValue = function(value) {
 }
 
 
-const typeRegex = "^b|c|txt$"
+const typeRegex = "^b|c|txt|tx$"
 
 const validateType = function(type) {
     if (type != null) {
@@ -128,7 +128,8 @@ var filterAppData = function(o) {
     let isdata = false
     for (let i = 0; i < o.out.length; i++) {
         // look for transactions starting with B or D protocol
-        if (o.out[i].b0 && o.out[i].b0.op && o.out[i].b0.op === 106 && (o.out[i].h1 == D_hex || o.out[i].h1 == B_hex)) {
+// she 6.2.20        if (o.out[i].b0 && o.out[i].b0.op && o.out[i].b0.op === 106 && (o.out[i].h2 == D_hex || o.out[i].h2 == B_hex)) {
+        if ((o.out[i].h2 == D_hex || o.out[i].h2 == B_hex) || (o.out[i].h1 == D_hex || o.out[i].h1 == B_hex)){
             isdata = true
             outputs.push(o.out[i])
         }

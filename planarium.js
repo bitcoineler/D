@@ -6,7 +6,7 @@ module.exports = {
             "v": 3,
             "q": {
                 "find": {},
-                "limit": 100
+                "limit": 1000
             },
             "r": {
                 "f": "[.[] | { protocols: .protocols, transaction: .txid, block: .blk, sender: .sender , key: .key, value: .value, type: .type, seq: .seq, \"URI over https\": (if .type == \"c\" then \"https://data.bitdb.network/1KuUr2pSJDao97XM8Jsq8zwLS6W1WtFfLg/c/\\(.value)\" elif .type == \"txt\" then null else \"https://b.bitdb.network#\\(.value)\" end)}]"
@@ -31,7 +31,7 @@ module.exports = {
             "v": 3,
             "q": {
                 "find": {},
-                "limit": 100
+                "limit": 1000
             },
             "r": {
                 "f": "[.[] | { protocols: .protocols, transaction: .txid, block: .blk, sender: .sender , key: .key, value: .value, type: .type, seq: .seq, \"URI over https\": (if .type == \"c\" then \"https://data.bitdb.network/1KuUr2pSJDao97XM8Jsq8zwLS6W1WtFfLg/c/\\(.value)\" elif .type == \"txt\" then null else \"https://b.bitdb.network#\\(.value)\" end)}]"
